@@ -1,36 +1,40 @@
 <apex:page controller="ControllerGetAllObject" >
-    <apex:form >
-        <apex:actionFunction name="CallFieldMethod" action="{!fetchFields}" reRender="fields" />
-        <apex:actionFunction name="CallField" action="{!selectedField}"  />
-        <apex:pageMessages id="msg"></apex:pageMessages>
-        <apex:outputPanel id="objectlist" >
-            Select Object: 
-            <apex:selectList value="{!selectedObject}" size="1"  onchange="CallFieldMethod()" >
-            <apex:selectOptions value="{!listOfObjects}"></apex:selectOptions>
-            </apex:selectList>
-            </apex:outputPanel><br/>
-           <apex:outputPanel id="fields" >
-               
-            <!--   Select Field : 
-            <apex:selectList value="{!selectedField}" size="1" id="FieldList" rendered="{!selectedObject != null}" onchange="CallField()" >
-            <apex:selectOptions value="{!listOfFields}"></apex:selectOptions>
-            </apex:selectList> -->
-                 <apex:pageBlock title="Field details for {!selectedObject}" rendered="{!selectedObject != null}">
-            <apex:pageBlockTable value="{!listOfFields}" var="con"  rendered="true">
-                
-                    <apex:column value="{!con.label}"/>
-                    <apex:column >
-                        <apex:inputCheckbox value="{!con.label}" />
-                </apex:column>
-            </apex:pageBlockTable>
-
-        </apex:pageBlock>
-        </apex:outputPanel>
-       <br/>
-       <apex:commandbutton value="Query" action="{!queryMe}" rerender="output"/>
-
-         <apex:dataList id="output" value="{!records}" var="r">
-         {!r}
-        </apex:dataList>
+  <apex:form >
+    <apex:actionFunction name="CallFieldMethod" action="{!fetchFields}" reRender="fields" />
+    <apex:pageMessages id="msg"></apex:pageMessages>
+    <apex:outputPanel id="objectlist" >
+      Select Object:
+      <apex:selectList value="{!selectedObject}" size="1"  onchange="CallFieldMethod()" >
+      <apex:selectOptions value="{!listOfObjects}"></apex:selectOptions>
+    </apex:selectList>
+  </apex:outputPanel><br/>
+  <apex:outputPanel id="fields">
+    <apex:pageBlock title="Field details for {!selectedObject}" rendered="{!selectedObject != null}">
+      <apex:pageBlockTable value="{!wrapField}" var="field">
+        <apex:column >
+        <apex:facet name="header">Field Name</apex:facet>
+        {!field.fieldName}
+      </apex:column>
+      <apex:column value="{!field.fieldValue}" />
+        <apex:column >
+        <apex:facet name="header">Data Type</apex:facet>
+        {!field.fielddataType}
+      </apex:column>
+      <apex:column >
+      <apex:facet name="header">Selection</apex:facet>
+      <apex:inputCheckbox value="{!field.selected}"/>
+      </apex:column>
+    </apex:pageBlockTable>
+  </apex:pageBlock>
+          <apex:commandbutton value="Query" action="{!queryMe}" style="margin:10px" />
+  <apex:pageBlock >
+    <apex:pageBlockTable rendered="true" value="{!records}" var="rec">
+      <apex:column value="{!rec.Id}" rendered="{!IF(listOfselectedFields.size == 0 , true, false)}"/>
+        <apex:repeat value="{!listOfselectedFields}" var="FieldLable">
+          <apex:column value="{!rec[FieldLable]}" rendered="{!IF(FieldLable != '--None--' , true, false)}"/>
+          </apex:repeat>
+        </apex:pageBlockTable>
+      </apex:pageBlock>
+    </apex:outputPanel>
     </apex:form>
-</apex:page>
+  </apex:page>
